@@ -5,7 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 
-public class Appoinment {
+public class Booking {
     private String b_id;
     private String emp_id;
     private String c_id;
