@@ -1,12 +1,11 @@
-package lk.ijse.salon.dto;
+package lk.ijse.salon.entity;
 
 import lombok.*;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 
-public class ProductDto {
+public class Product {
     private String product_id;
     private String getDate;
     private String qty;
