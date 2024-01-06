@@ -4,9 +4,9 @@ import javafx.collections.ObservableList;
 import lk.ijse.salon.db.DbConnection;
 import lk.ijse.salon.dto.AppoinmentDto;
 import lk.ijse.salon.dto.tm.BookingTm;
+import lk.ijse.salon.util.SQLUtil;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,32 +35,13 @@ public class AppoinmentModel {
 
     private static boolean saveDetails(ObservableList<BookingTm> list, AppoinmentDto dto) throws SQLException {
         for (BookingTm tm : list) {
-            Connection connection = DbConnection.getInstance().getConnection();
-
-            String sql = "INSERT INTO bookingdetails VALUES (?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setObject(1, tm.getSId());
-            statement.setObject(2, dto.getB_id());
-
-            if (!(statement.executeUpdate() > 0)) {
-                return false;
-            }
+            return SQLUtil.execute("INSERT INTO bookingdetails VALUES (?,?)" ,tm.getSId(),dto.getB_id());
         }
-        return true;
+        return false;
     }
 
     private static boolean save(AppoinmentDto dto) throws SQLException {
-        Connection connection = DbConnection.getInstance().getConnection();
-
-        String sql = "INSERT INTO booking values (?,?,?,?,?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setObject(1, dto.getB_id());
-        statement.setObject(2, dto.getDate());
-        statement.setObject(3, dto.getTime());
-        statement.setObject(4, dto.getEmp_id());
-        statement.setObject(5, dto.getC_id());
-
-        return statement.executeUpdate() > 0;
+        return SQLUtil.execute("INSERT INTO booking values (?,?,?,?,?)",dto.getB_id(),dto.getDate(),dto.getTime(),dto.getEmp_id(),dto.getC_id());
     }
 
     public static String getNext() throws SQLException {
@@ -77,11 +58,7 @@ public class AppoinmentModel {
     }
 
     public static List<AppoinmentDto> loadAllShedules() throws SQLException {
-        Connection connection = DbConnection.getInstance().getConnection();
-
-        String sql = "SELECT * FROM booking";
-        ResultSet resultSet = connection.prepareStatement(sql).executeQuery();
-
+        ResultSet resultSet = SQLUtil.execute( "SELECT * FROM booking");
         List<AppoinmentDto> ScheduleList = new ArrayList<>();
 
         while (resultSet.next()) {
@@ -93,35 +70,15 @@ public class AppoinmentModel {
                     resultSet.getString(5)));
 
         }
-        return ScheduleList;
-    }
-
-    public boolean saveAppoinment(AppoinmentDto dto) throws SQLException {
-        Connection connection = DbConnection.getInstance().getConnection();
-
-        String sql = "insert into booking values (?,?,?,?,?,?)";
-        PreparedStatement statement = connection.prepareStatement(sql);
-
-        statement.setString(1, dto.getB_id());
-        statement.setString(2, dto.getTime());
-        statement.setString(3, dto.getDate());
-        statement.setString(4, dto.getEmp_id());
-        statement.setString(5, dto.getC_id());
-
-
-        boolean isSaved = statement.executeUpdate() > 0;
-        return isSaved;
+        return null;
     }
 
     public int getAllAppoinemts() throws SQLException {
-        Connection connection = DbConnection.getInstance().getConnection();
-        ResultSet resultSet = connection.prepareStatement("SELECT count(*) from booking").executeQuery();
+        ResultSet resultSet = SQLUtil.execute("SELECT count(*) from booking");
         int count = 0;
         while (resultSet.next()){
             count+=resultSet.getInt(1);
         }
         return count;
-
-
     }
 }

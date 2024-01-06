@@ -13,7 +13,7 @@ public class Launcher extends Application{
     }
 @Override
     public void start(Stage stage) throws Exception{
-        Parent parent = FXMLLoader.load(this.getClass().getResource("/View/LoginPageForm.fxml"));
+        Parent parent = FXMLLoader.load(this.getClass().getResource("/View/mainForm.fxml"));
         Scene scene = new Scene(parent);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setTitle("Mona Beauty Salon");

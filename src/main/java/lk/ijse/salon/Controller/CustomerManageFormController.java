@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class CustomerManageFormController {
-
     @FXML
     private ComboBox<String> cmb_gender;
 

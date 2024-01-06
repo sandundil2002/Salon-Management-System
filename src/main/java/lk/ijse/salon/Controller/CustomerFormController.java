@@ -23,13 +23,8 @@ import java.net.URL;
 import java.sql.SQLException;
 
 public class CustomerFormController {
-
         @FXML
         private TextField txtGenreportsCusId;
-
-
-
-
 
         @FXML
         void btnManageCustOnAction(ActionEvent event) {
@@ -50,17 +45,15 @@ public class CustomerFormController {
 
         @FXML
         void ReportsOnAction() throws SQLException, JRException {
-                        InputStream resourceAsStream = getClass().getResourceAsStream("/Reports/customerReport.jrxml");
-                        JasperDesign load = JRXmlLoader.load(resourceAsStream);
-                        JRDesignQuery jrDesignQuery = new JRDesignQuery();
-                        jrDesignQuery.setText("SELECT * FROM customers WHERE c_id = "+"\""+txtGenreportsCusId.getText()+"\"");
-                        load.setQuery(jrDesignQuery);
-
-                        JasperReport jasperReport = JasperCompileManager.compileReport(load);
-                        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,null, DbConnection.getInstance().getConnection());
-                        JasperViewer.viewReport(jasperPrint,false);
-                }
-
+                InputStream resourceAsStream = getClass().getResourceAsStream("/Reports/customerReport.jrxml");
+                JasperDesign load = JRXmlLoader.load(resourceAsStream);
+                JRDesignQuery jrDesignQuery = new JRDesignQuery();
+                jrDesignQuery.setText("SELECT * FROM customers WHERE c_id = "+"\""+txtGenreportsCusId.getText()+"\"");
+                load.setQuery(jrDesignQuery);
+                JasperReport jasperReport = JasperCompileManager.compileReport(load);
+                JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,null, DbConnection.getInstance().getConnection());
+                JasperViewer.viewReport(jasperPrint,false);
+        }
 
         public void btnReportOnAction(ActionEvent actionEvent) throws JRException, SQLException {
                 ReportsOnAction();

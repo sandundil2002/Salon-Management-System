@@ -1,21 +1,15 @@
 package lk.ijse.salon.model;
 
 import javafx.scene.control.Alert;
-import lk.ijse.salon.db.DbConnection;
 import lk.ijse.salon.dto.EmployeeDto;
 import lk.ijse.salon.util.SQLUtil;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeModel {
-
     public boolean SearchEmployee(String Username, String Password) throws SQLException {
-
         ResultSet resultSet = SQLUtil.execute("SELECT username, password FROM employee WHERE username = ?",Username);
         if (resultSet.next()) {
             if (Username.equals(resultSet.getString(1))) {
@@ -30,25 +24,6 @@ public class EmployeeModel {
         }
         return false;
     }
-
-//    public boolean signupEmployee(EmployeeDto dto) throws SQLException {
-//        Connection connection = DbConnection.getInstance().getConnection();
-//
-//        String sql = "insert into employee values (?,?,?,?,?,?,?,?,?)";
-//        PreparedStatement statement = connection.prepareStatement(sql);
-//
-//        statement.setString(1, dto.getEmp_id());
-//        statement.setString(2, dto.getFirst_name());
-//        statement.setString(3, dto.getLast_name());
-//        statement.setString(4, dto.getEmail());
-//        statement.setString(5, dto.getPhone_number());
-//        statement.setString(6, dto.getNic());
-//        statement.setString(7, dto.getJob_rank());
-//        statement.setString(8, dto.getUsername());
-//        statement.setString(9, dto.getPassword());
-//
-//        return statement.executeUpdate() > 0;
-//    }
 
     public List<EmployeeDto> getAllEmployees() throws SQLException {
         ResultSet resultSet = SQLUtil.execute("SELECT * FROM employee");
@@ -72,11 +47,9 @@ public class EmployeeModel {
 
     public boolean saveEmployee(EmployeeDto dto) throws SQLException {
          return SQLUtil.execute("insert into employee values (?,?,?,?,?,?,?,?,?)",dto.getEmp_id(),dto.getFirst_name(),dto.getLast_name(),dto.getEmail(),dto.getPhone_number(),dto.getNic(),dto.getJob_rank(),dto.getUsername(),dto.getPassword());
-
     }
 
     public boolean updateEmployee(EmployeeDto dto) throws SQLException {
-
         return SQLUtil.execute("UPDATE employee SET first_name = ?, last_name = ?, email = ?, phone_number = ?, nic = ?, job_Rank = ?, username =?, password = ? WHERE emp_id = ?",dto.getFirst_name(),dto.getLast_name(),dto.getEmail(),dto.getPhone_number(),dto.getNic(),dto.getJob_rank(),dto.getUsername(),dto.getPassword(),dto.getEmp_id());
     }
 
@@ -112,8 +85,6 @@ public class EmployeeModel {
             count+=resultSet.getInt(1);
         }
         return count;
-
-
     }
 }
 
