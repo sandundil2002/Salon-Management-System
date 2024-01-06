@@ -1,4 +1,6 @@
 package lk.ijse.salon.dao.custom;
 
-public interface ProductsDAO {
+import lk.ijse.salon.entity.Product;
+
+public interface ProductsDAO extends CrudDAO<Product> {
 }
