@@ -1,12 +1,11 @@
 package lk.ijse.salon.model;
 
 import javafx.collections.ObservableList;
-import lk.ijse.salon.db.DbConnection;
+import javafx.scene.control.Alert;
 import lk.ijse.salon.dto.AppoinmentDto;
 import lk.ijse.salon.dto.tm.BookingTm;
 import lk.ijse.salon.util.SQLUtil;
-
-import java.sql.Connection;
+import lk.ijse.salon.util.TransactionUtil;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,21 +13,18 @@ import java.util.List;
 
 public class AppoinmentModel {
     public static boolean plaseOrder(AppoinmentDto dto, ObservableList<BookingTm> list) throws SQLException {
-        Connection connection = null;
         try {
-            connection = DbConnection.getInstance().getConnection();
-            connection.setAutoCommit(false);
+            TransactionUtil.startTransaction();
             if (save(dto) && saveDetails(list, dto)) {
-                connection.commit();
                 return true;
             } else {
-                connection.rollback();
+                TransactionUtil.rollBack();
             }
         } catch (SQLException e) {
-            connection.rollback();
-            throw new RuntimeException(e);
+            TransactionUtil.rollBack();
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         } finally {
-            connection.setAutoCommit(true);
+            TransactionUtil.endTransaction();
         }
         return false;
     }
