@@ -66,7 +66,7 @@ public class BookingDAOImpl implements BookingDAO {
     }
 
     @Override
-    public boolean plaseOrder(Booking dto, ObservableList<BookingTm> list) throws SQLException,ClassNotFoundException {
+    public boolean placeOrder(Booking dto, ObservableList<BookingTm> list) throws SQLException,ClassNotFoundException {
         try {
             TransactionUtil.startTransaction();
             if (save(dto) && saveDetails(list, dto)) {
