@@ -7,15 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import lk.ijse.salon.bo.custom.ServiceBO;
+import lk.ijse.salon.bo.custom.impl.ServiceBOImpl;
 import lk.ijse.salon.dto.ServiceDto;
-import lk.ijse.salon.model.ServiceModel;
-import org.eclipse.jdt.internal.compiler.env.IModule;
 
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 public class ServiceManageFormController {
-
     @FXML
     private ComboBox<String> cmbServiceType;
 
@@ -30,6 +29,9 @@ public class ServiceManageFormController {
 
     @FXML
     private TextField txtServicePrice;
+
+    ServiceBO serviceBO = new ServiceBOImpl();
+
     public void initialize(){
         ObservableList oblist= FXCollections.observableArrayList("Nail",
                 "Body",
@@ -53,18 +55,16 @@ public class ServiceManageFormController {
             return;
         }
         var dto = new ServiceDto(service_id, pricee, service_type, description, Name);
-        var model = new ServiceModel();
 
         try {
-            boolean isSaved = model.saveService(dto);
+            boolean isSaved = serviceBO.saveService(dto);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Service Save Successfully").show();
 
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
-
     }
 
     private boolean validateService() {
@@ -120,17 +120,14 @@ public class ServiceManageFormController {
     @FXML
     void btnServiceDelete(ActionEvent event) {
         String service_id=txtServiceId.getText();
-        var model=new ServiceModel();
         try{
-            boolean isDeleted=model.deleteService(service_id);
+            boolean isDeleted=serviceBO.deleteService(service_id);
             if(isDeleted){
                 new Alert(Alert.AlertType.CONFIRMATION,"Service Delete Sucessfully").show();
             }
-
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
-
     }
 
     @FXML
@@ -146,17 +143,14 @@ public class ServiceManageFormController {
             return;
         }
         var dto = new ServiceDto(service_id, pricee, service_type, description, Name);
-        var model = new ServiceModel();
 
         try {
-            boolean isUpdated = model.updateService(dto);
+            boolean isUpdated = serviceBO.updateService(dto);
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION,"Service Updateda yakow").show();
             }
-        }catch (SQLException e){
+        }catch (SQLException | ClassNotFoundException e){
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
-
     }
-
 }

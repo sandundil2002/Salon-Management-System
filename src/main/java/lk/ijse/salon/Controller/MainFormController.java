@@ -11,10 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.util.Duration;
 
-import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

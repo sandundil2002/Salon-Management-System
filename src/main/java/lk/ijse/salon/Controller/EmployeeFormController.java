@@ -12,12 +12,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import lk.ijse.salon.bo.custom.EmployeesBO;
+import lk.ijse.salon.bo.custom.impl.EmployeesBOImpl;
 import lk.ijse.salon.db.DbConnection;
 import lk.ijse.salon.dto.EmployeeDto;
 import lk.ijse.salon.dto.tm.EmployeeTm;
-import lk.ijse.salon.model.EmployeeModel;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -55,6 +55,7 @@ public class EmployeeFormController {
         private TableColumn<?, ?> colRank;
         @FXML
         private TextField txtEmpIdSerarch;
+        EmployeesBO employeesBO = new EmployeesBOImpl();
 
         public void initialize() throws SQLException {
                 loadAllEmployee();
@@ -113,12 +114,10 @@ public class EmployeeFormController {
         }
 
         private void loadAllEmployee() throws SQLException {
-                var model = new EmployeeModel();
-
                 ObservableList<EmployeeTm> obList = FXCollections.observableArrayList();
 
                 try{
-                        List<EmployeeDto> dtoList = model.getAllEmployees();
+                        List<EmployeeDto> dtoList = employeesBO.loadAllEmployees();
 
                         for(EmployeeDto dto : dtoList){
                                 obList.add(new EmployeeTm(
@@ -134,7 +133,7 @@ public class EmployeeFormController {
                                 ));
                         }
                         tblEmployee.setItems(obList);
-                } catch (SQLException e) {
+                } catch (SQLException | ClassNotFoundException e) {
                         new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
                 }
 

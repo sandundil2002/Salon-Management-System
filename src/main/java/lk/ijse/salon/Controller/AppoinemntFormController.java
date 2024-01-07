@@ -7,12 +7,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import lk.ijse.salon.bo.custom.BookingBO;
+import lk.ijse.salon.bo.custom.*;
+import lk.ijse.salon.bo.custom.impl.*;
 import lk.ijse.salon.dto.*;
 import lk.ijse.salon.dto.tm.BookingTm;
-import lk.ijse.salon.model.AppoinmentModel;
-import lk.ijse.salon.model.CustomerModel;
-import lk.ijse.salon.model.EmployeeModel;
-import lk.ijse.salon.model.ServiceModel;
+import lk.ijse.salon.entity.Booking;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class AppoinemntFormController implements Initializable {
-
     public ComboBox cmdCusid;
     public TextField txtCustomerName;
     public ComboBox cmbServiceId;
@@ -36,12 +35,11 @@ public class AppoinemntFormController implements Initializable {
     public TableView tbl;
     public ComboBox cmbEmp;
     public TextField txtEmpName;
-
+    BookingBO bookingBO = new BookingBOImpl();
+    CustomersBO customersBO = new CustomersBOImpl();
+    EmployeesBO employeesBO = new EmployeesBOImpl();
+    ServiceBO serviceBO = new ServiceBOImpl();
     ObservableList<BookingTm> list = FXCollections.observableArrayList();
-
-
-    public void btnApooinmentOnAction(ActionEvent actionEvent) {
-    }
 
     public void btnsaveAppoin(ActionEvent actionEvent) {
         BookingTm bookingTm = new BookingTm();
@@ -54,8 +52,8 @@ public class AppoinemntFormController implements Initializable {
         tbl.refresh();
     }
 
-    public void bynBookingAppo(ActionEvent actionEvent) throws SQLException {
-        AppoinmentDto  dto=new AppoinmentDto();
+    public void bynBookingAppo(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        Booking dto = new Booking();
         dto.setB_id(nextId());
         dto.setTime(new SimpleDateFormat("hh:mm:ss").format(new Date()));
         dto.setDate(new SimpleDateFormat("yyyy-M-dd").format(new Date()));
@@ -63,52 +61,43 @@ public class AppoinemntFormController implements Initializable {
         dto.setC_id((String) cmdCusid.getValue());
 
         try {
-            boolean b = AppoinmentModel.plaseOrder(dto, list);
+            boolean b = bookingBO.placeOrder(dto, list);
             if (b){
                 new Alert(Alert.AlertType.CONFIRMATION,"Booking Confirme").show();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e ) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
-
-
     }
 
-    private String nextId() throws SQLException {
-        return AppoinmentModel.getNext();
+    private String nextId() throws SQLException, ClassNotFoundException {
+        return bookingBO.generateBookingId();
     }
-
-    public void btnCancel(ActionEvent actionEvent) {
-
-
-    }
-
 
     private void loadAllCustomer() {
         ObservableList<String> obList = FXCollections.observableArrayList();
         try {
-            List<CustomerDto> customerDtos = CustomerModel.loadAllCustomer();
+            List<CustomerDto> customerDtos = customersBO.loadAllCustomers();
             for (CustomerDto dto : customerDtos) {
                 obList.add(dto.getC_id());
             }
             cmdCusid.setItems(obList);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
     }
-
 
     private void loadAllService() {
         ObservableList<String> obList = FXCollections.observableArrayList();
         try {
-            List<ServiceDto> serList = ServiceModel.loadAllService();
+            List<ServiceDto> serList = serviceBO.loadAllService();
 
             for (ServiceDto serviceDto : serList) {
                 obList.add(serviceDto.getService_id());
             }
             cmbServiceId.setItems(obList);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
     }
 
@@ -116,11 +105,11 @@ public class AppoinemntFormController implements Initializable {
     void cmbCusIdOnAction(ActionEvent event) {
         String id = String.valueOf(cmdCusid.getValue());
         try {
-            CustomerDto dto = CustomerModel.searchCustomer(id);
+            CustomerDto dto = customersBO.searchCustomer(id);
             txtCustomerName.setText(dto.getFirst_name());
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
 
     }
@@ -129,11 +118,11 @@ public class AppoinemntFormController implements Initializable {
     void cmbServiceIdOnAction(ActionEvent event) {
         String id = String.valueOf(cmbServiceId.getValue());
         try {
-            ServiceDto dto = ServiceModel.findServesById(id);
+            ServiceDto dto = serviceBO.searchService(id);
             txtServicePrice.setText(dto.getPrice());
             txtServiceType.setText(dto.getService_type());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
     }
 
@@ -152,26 +141,25 @@ public class AppoinemntFormController implements Initializable {
     }
     private void loadAllEmployee() {
         ObservableList<String> obList = FXCollections.observableArrayList();
-        EmployeeModel employeeModel = new EmployeeModel();
+
         try {
-            List<EmployeeDto> list = employeeModel.getAllEmployees();
+            List<EmployeeDto> list = employeesBO.loadAllEmployees();
             for (EmployeeDto dto:list){
                 obList.add(dto.getEmp_id());
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
         cmbEmp.setItems(obList);
     }
 
     public void btnEmpIdOnAction(ActionEvent actionEvent) {
-        EmployeeModel model=new EmployeeModel();
         try {
-            EmployeeDto dto = model.searchEmployee((String) cmbEmp.getValue());
+            EmployeeDto dto = employeesBO.searchEmployees((String) cmbEmp.getValue());
             txtEmpName.setText(dto.getFirst_name()+" "+dto.getLast_name());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | ClassNotFoundException e) {
+            new Alert(Alert.AlertType.ERROR,e.getMessage()).show();
         }
     }
 }

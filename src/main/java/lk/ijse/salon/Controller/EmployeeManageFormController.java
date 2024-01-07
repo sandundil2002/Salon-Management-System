@@ -3,8 +3,9 @@ package lk.ijse.salon.Controller;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import lk.ijse.salon.bo.custom.EmployeesBO;
+import lk.ijse.salon.bo.custom.impl.EmployeesBOImpl;
 import lk.ijse.salon.dto.EmployeeDto;
-import lk.ijse.salon.model.EmployeeModel;
 
 import java.sql.SQLException;
 import java.util.regex.Pattern;
@@ -19,6 +20,8 @@ public class EmployeeManageFormController {
     public TextField txtRank;
     public TextField txtUsername;
     public TextField txtPassword;
+
+    EmployeesBO employeesBO = new EmployeesBOImpl();
 
     public void btnSaveOnAction(ActionEvent actionEvent) {
         String eId = txtEmployeeid.getText();
@@ -37,14 +40,13 @@ public class EmployeeManageFormController {
         }
 
         var dto = new EmployeeDto(eId,fName,lName,email,mobile,nic,rank,uName,password);
-        var model = new EmployeeModel();
 
         try {
-            boolean isSaved = model.saveEmployee(dto);
+            boolean isSaved = employeesBO.saveEmployees(dto);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Employee Added Succesfull").show();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
@@ -66,31 +68,31 @@ public class EmployeeManageFormController {
         }
 
         var dto = new EmployeeDto(eId,fName,lName,email,mobile,nic,rank,uName,password);
-        var model = new EmployeeModel();
 
         try {
-            boolean isUpdated = model.updateEmployee(dto);
+            boolean isUpdated = employeesBO.updateEmployees(dto);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Schedule Update Succesfull!!!").show();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
 
-    public void btnDeleteOnAction(ActionEvent actionEvent) throws SQLException {
-        String E_id = txtEmployeeid.getText();
-        var model = new EmployeeModel();
-
-        var EmployeeModel = new EmployeeModel();
-        EmployeeDto dto = model.searchEmployee(E_id);
-        if(dto != null) {
-            boolean isDeleted = model.deleteEmployee(E_id);
-            if (isDeleted) {
-                new Alert(Alert.AlertType.CONFIRMATION, "Employee Delete Succesfull!!!").show();
-            }
-        }else {
-            new Alert(Alert.AlertType.ERROR, "Employee Not Found!!!").show();
+    public void btnDeleteOnAction(ActionEvent actionEvent) {
+        try {
+            String E_id = txtEmployeeid.getText();
+            EmployeeDto dto = employeesBO.searchEmployees(E_id);
+                if (dto != null) {
+                    boolean isDeleted = employeesBO.deleteEmployees(E_id);
+                    if (isDeleted) {
+                        new Alert(Alert.AlertType.CONFIRMATION, "Employee Delete Succesfull!!!").show();
+                    }
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Employee Not Found!!!").show();
+                }
+        } catch ( SQLException | ClassNotFoundException e){
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
 
@@ -110,16 +112,15 @@ public class EmployeeManageFormController {
     public void btnSearchOnAction(ActionEvent actionEvent) {
         String E_id = txtEmployeeid.getText();
 
-        var model = new EmployeeModel();
         try {
-            EmployeeDto dto = model.searchEmployee(E_id);
+            EmployeeDto dto = employeesBO.searchEmployees(E_id);
 
             if (dto != null){
                 fillFields(dto);
             }else {
                 new Alert(Alert.AlertType.WARNING, "Employee not found");
             }
-        } catch (SQLException e){
+        } catch (SQLException | ClassNotFoundException e){
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }

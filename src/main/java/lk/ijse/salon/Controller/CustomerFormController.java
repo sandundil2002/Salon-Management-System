@@ -8,9 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import lk.ijse.salon.bo.custom.CustomersBO;
+import lk.ijse.salon.bo.custom.impl.CustomersBOImpl;
 import lk.ijse.salon.db.DbConnection;
 import lk.ijse.salon.dto.CustomerDto;
-import lk.ijse.salon.model.CustomerModel;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -25,6 +26,7 @@ import java.sql.SQLException;
 public class CustomerFormController {
         @FXML
         private TextField txtGenreportsCusId;
+        CustomersBO customersBO = new CustomersBOImpl();
 
         @FXML
         void btnManageCustOnAction(ActionEvent event) {
@@ -62,10 +64,8 @@ public class CustomerFormController {
         public void btnSearchCusdOnAction(ActionEvent actionEvent) {
                 String id = txtGenreportsCusId.getText();
 
-                var model = new CustomerModel();
                 try {
-                        CustomerDto dto = model.searchCustomer(id);
-
+                        CustomerDto dto = customersBO.searchCustomer(id);
                         if(dto != null) {
                                 fillFields(dto);
                         } else {
@@ -73,9 +73,10 @@ public class CustomerFormController {
                         }
                 } catch (SQLException e) {
                         new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
         }
-
         private void fillFields(CustomerDto dto) {
         }
 }

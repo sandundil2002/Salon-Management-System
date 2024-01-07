@@ -10,17 +10,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import lk.ijse.salon.bo.custom.ProductsBO;
+import lk.ijse.salon.bo.custom.impl.ProductsBOImpl;
 import lk.ijse.salon.dto.ProductDto;
 import lk.ijse.salon.dto.tm.productTm;
-import lk.ijse.salon.model.ProductModel;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.List;
 
-
 public class ProductFormController {
-
         @FXML
         private TableColumn<?, ?> date;
 
@@ -45,9 +45,15 @@ public class ProductFormController {
         @FXML
         private TableView<productTm> table;
 
+        ProductsBO productsBO = new ProductsBOImpl();
+
         public void initialize(){
-                setCellValueFactory();
+            try {
                 loadAllProduct();
+                setCellValueFactory();
+            } catch (SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         private void setCellValueFactory() {
@@ -60,8 +66,8 @@ public class ProductFormController {
                 price.setCellValueFactory(new PropertyValueFactory<>("price"));
                 }
 
-        private void loadAllProduct() {
-                List<ProductDto> allProduct = new ProductModel().getAllProduct();
+        private void loadAllProduct() throws SQLException, ClassNotFoundException {
+                List<ProductDto> allProduct = productsBO.loadAllProducts();
                 ObservableList<productTm> list=FXCollections.observableArrayList();
                 for (ProductDto dto:allProduct){
                         list.add(new productTm(
@@ -92,6 +98,4 @@ public class ProductFormController {
                         e.printStackTrace();
                 }
         }
-
-
 }

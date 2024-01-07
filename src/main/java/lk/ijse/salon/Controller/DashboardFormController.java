@@ -7,9 +7,12 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import lk.ijse.salon.model.AppoinmentModel;
-import lk.ijse.salon.model.CustomerModel;
-import lk.ijse.salon.model.EmployeeModel;
+import lk.ijse.salon.bo.custom.BookingBO;
+import lk.ijse.salon.bo.custom.CustomersBO;
+import lk.ijse.salon.bo.custom.EmployeesBO;
+import lk.ijse.salon.bo.custom.impl.BookingBOImpl;
+import lk.ijse.salon.bo.custom.impl.CustomersBOImpl;
+import lk.ijse.salon.bo.custom.impl.EmployeesBOImpl;
 
 import java.sql.SQLException;
 
@@ -27,33 +30,33 @@ public class DashboardFormController {
     @FXML
     private Label lblcustomercount;
 
-
+    CustomersBO customersBO = new CustomersBOImpl();
+    BookingBO bookingBO = new BookingBOImpl();
+    EmployeesBO employeesBO = new EmployeesBOImpl();
 
     public void initialize(){
 
         try {
-            int i = new EmployeeModel().getAllEmployee();
+            int i = employeesBO.getEmployeeCount();
             labTotalAppoinemnts.setText(String.valueOf(i));
         } catch (SQLException e) {
             System.out.printf("", e.getMessage());
 
         }
         try {
-            int i = new AppoinmentModel().getAllAppoinemts();
+            int i = bookingBO.getBookingCount();
             lblemployeecount.setText(String.valueOf(i));
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.printf("", e.getMessage());
 
         }
         try {
-            int i = new CustomerModel().getCustomerCount();
+            int i = customersBO.getCustomerCount();
             lblcustomercount.setText(String.valueOf(i));
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             System.out.printf("", e.getMessage());
 
         }
-
-
 
         ObservableList<PieChart.Data> observableList = FXCollections.observableArrayList(
                 new PieChart.Data("Nail Art", 10),

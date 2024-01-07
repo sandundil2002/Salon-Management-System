@@ -8,8 +8,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import lk.ijse.salon.bo.custom.ProductsBO;
+import lk.ijse.salon.bo.custom.impl.ProductsBOImpl;
 import lk.ijse.salon.dto.ProductDto;
-import lk.ijse.salon.model.ProductModel;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -25,6 +26,7 @@ public class ProductManageFormController implements Initializable {
     public TextField txtPrice;
     public ComboBox<String > cmbType;
     public DatePicker txtDate;
+    ProductsBO productsBO = new ProductsBOImpl();
 
     public void btnSaveOnAction(ActionEvent actionEvent) {
         String id = txtProductid.getText();
@@ -36,14 +38,13 @@ public class ProductManageFormController implements Initializable {
         String date = String.valueOf(txtDate.getValue());
 
         var dto = new ProductDto(id,date,qty,price,type,description,name);
-        var model = new ProductModel();
 
         try {
-            boolean isSaved = model.saveProduct(dto);
+            boolean isSaved = productsBO.saveProduct(dto);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Product Added Succesfull").show();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
@@ -59,14 +60,13 @@ public class ProductManageFormController implements Initializable {
             String date = String.valueOf(txtDate.getValue());
 
             var dto = new ProductDto(id, date, qty,price,type,description,name );
-            var model = new ProductModel();
 
             try {
-                boolean isUpdated = model.updateProduct(dto);
+                boolean isUpdated = productsBO.updateProduct(dto);
                 if (isUpdated) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Product Update Succesfull!!!").show();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
             }
 
@@ -75,13 +75,10 @@ public class ProductManageFormController implements Initializable {
         public void btnDeleteOnAction (ActionEvent actionEvent){
             String id = txtProductid.getText();
 
-            var model = new ProductModel();
-
             try {
-                var productModel = new ProductModel();
-                ProductDto dto = model.searchProduct(id);
+                ProductDto dto = productsBO.searchProduct(id);
                 if (dto != null) {
-                    boolean isDeleted = productModel.deleteProduct(id);
+                    boolean isDeleted = productsBO.deleteProduct(id);
                     if (isDeleted) {
                         new Alert(Alert.AlertType.CONFIRMATION, "Product delete succesfull").show();
                         btnClearOnAction(actionEvent);
@@ -90,7 +87,7 @@ public class ProductManageFormController implements Initializable {
                     new Alert(Alert.AlertType.WARNING, "Product not found").show();
                     btnClearOnAction(actionEvent);
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
             }
         }
@@ -106,16 +103,14 @@ public class ProductManageFormController implements Initializable {
         public void btnSearchOnAction (ActionEvent actionEvent){
             String id = txtProductid.getText();
 
-            var model = new ProductModel();
             try {
-                ProductDto dto = model.searchProduct(id);
-
+                ProductDto dto = productsBO.searchProduct(id);
                 if (dto != null) {
                     fillFields(dto);
                 } else {
                     new Alert(Alert.AlertType.INFORMATION, "Product not found");
                 }
-            } catch (SQLException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
             }
         }
